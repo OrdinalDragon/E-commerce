@@ -7,10 +7,10 @@ import toast from 'react-hot-toast';
 
 const sidebarLinks = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: FiGrid },
-  { to: '/admin/products', label: 'Products', icon: FiPackage },
-  { to: '/admin/orders', label: 'Orders', icon: FiShoppingCart },
-  { to: '/admin/users', label: 'Users', icon: FiUsers },
-  { to: '/admin/stats', label: 'Stats', icon: FiBarChart2 },
+  { to: '/admin/products', label: 'Productos', icon: FiPackage },
+  { to: '/admin/orders', label: 'Órdenes', icon: FiShoppingCart },
+  { to: '/admin/users', label: 'Usuarios', icon: FiUsers },
+  { to: '/admin/stats', label: 'Estadísticas', icon: FiBarChart2 },
 ];
 
 const AdminLayout = () => {
@@ -20,7 +20,7 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    toast.success('Logged out');
+    toast.success('Sesión cerrada');
     navigate('/login');
   };
 
@@ -39,7 +39,7 @@ const AdminLayout = () => {
         }`}
       >
         <div className="h-16 flex items-center justify-between px-6 border-b">
-          <span className="text-lg font-bold text-gray-900">Admin Panel</span>
+          <span className="text-lg font-bold text-gray-900">Panel admin</span>
           <button
             className="lg:hidden text-gray-500"
             onClick={() => setSidebarOpen(false)}
@@ -73,7 +73,7 @@ const AdminLayout = () => {
             className="flex items-center gap-3 px-4 py-2.5 rounded text-sm text-gray-600 hover:bg-gray-50 w-full mt-4"
           >
             <FiLogOut size={18} />
-            Logout
+            Cerrar sesión
           </button>
         </nav>
       </aside>

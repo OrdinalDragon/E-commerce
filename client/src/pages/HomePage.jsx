@@ -39,13 +39,13 @@ const HomePage = () => {
 
       <section id="products-grid" className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Productos destacados</h2>
 
           <form onSubmit={handleSearch} className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-none">
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Buscar productos..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 className="w-full sm:w-56 pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sadness/40 focus:border-sadness bg-white"
@@ -83,21 +83,21 @@ const HomePage = () => {
 
         {isError && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-            <p className="text-red-600 font-medium">Failed to load products</p>
-            <p className="text-red-500 text-sm mt-1">{error?.data?.message || error?.error || 'Something went wrong'}</p>
+            <p className="text-red-600 font-medium">Error al cargar productos</p>
+            <p className="text-red-500 text-sm mt-1">{error?.data?.message || error?.error || 'Algo salió mal'}</p>
             <button
               onClick={() => setPage(1)}
               className="mt-4 text-sm text-red-600 underline hover:no-underline"
             >
-              Try again
+              Intentar de nuevo
             </button>
           </div>
         )}
 
         {!isLoading && !isError && products.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-lg">No products found</p>
-            <p className="text-gray-300 text-sm mt-1">Try adjusting your search or filters</p>
+            <p className="text-gray-400 text-lg">No se encontraron productos</p>
+            <p className="text-gray-300 text-sm mt-1">Probá ajustando la búsqueda o los filtros</p>
           </div>
         )}
 

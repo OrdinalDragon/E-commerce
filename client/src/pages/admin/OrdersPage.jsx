@@ -48,7 +48,7 @@ const OrdersPage = () => {
       {!isLoading && !isError && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[800px]">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
                   <th className="text-left px-4 py-3.5 font-semibold text-gray-600 text-xs uppercase tracking-wider">ID</th>

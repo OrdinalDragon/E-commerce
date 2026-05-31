@@ -55,11 +55,11 @@ const RegisterPage = () => {
       }).unwrap();
 
       dispatch(setCredentials(result.data));
-      toast.success(`Welcome, ${result.data.name}!`);
+      toast.success(`¡Bienvenido, ${result.data.name}!`);
 
       navigate(result.data.role === 'admin' ? '/admin/dashboard' : '/');
     } catch (err) {
-      const message = err?.data?.message || 'Registration failed';
+      const message = err?.data?.message || 'Error al registrarse';
       toast.error(message);
     }
   };
@@ -78,23 +78,23 @@ const RegisterPage = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold">
               <span className="bg-gradient-to-r from-joy via-anger to-fear bg-clip-text text-transparent">
-                Join Us
+                Crear cuenta
               </span>
             </h1>
             <p className="text-gray-500 text-sm mt-2">
-              Create your account and start exploring
+              Creá tu cuenta y empezá a explorar
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
               <input
                 type="text"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="Your full name"
+                placeholder="Tu nombre completo"
                 className={inputClass('name')}
               />
               {errors.name && (
@@ -108,13 +108,13 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Correo electrónico</label>
               <input
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
+                placeholder="tu@email.com"
                 className={inputClass('email')}
               />
               {errors.email && (
@@ -128,13 +128,13 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
               <input
                 type="password"
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder="Min. 6 characters"
+                placeholder="Mín. 6 caracteres"
                 className={inputClass('password')}
               />
               {errors.password && (
@@ -148,13 +148,13 @@ const RegisterPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirmar contraseña</label>
               <input
                 type="password"
                 name="confirmPassword"
                 value={form.confirmPassword}
                 onChange={handleChange}
-                placeholder="Repeat your password"
+                placeholder="Repetí tu contraseña"
                 className={inputClass('confirmPassword')}
               />
               {errors.confirmPassword && (
@@ -178,21 +178,21 @@ const RegisterPage = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Creating account...
+                  Creando cuenta...
                 </>
               ) : (
-                'Create Account'
+                'Crear cuenta'
               )}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Already have an account?{' '}
+            ¿Ya tenés cuenta?{' '}
             <Link
               to="/login"
               className="font-semibold text-sadness hover:text-blue-700 transition-colors"
             >
-              Sign in
+              Iniciar sesión
             </Link>
           </p>
         </div>

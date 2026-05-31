@@ -2,7 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authSlice.js';
+import { FiMenu, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+
+const NAV_LINKS = [
+  { to: '/', label: 'Tienda' },
+  { to: '/cart', label: 'Carrito' },
+];
 
 const Navbar = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -10,6 +16,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -22,9 +29,14 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
   const handleLogout = () => {
     dispatch(logout());
-    toast.success('Logged out');
+    toast.success('Sesión cerrada');
     navigate('/login');
     setMenuOpen(false);
   };
@@ -40,7 +52,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2">
           <Link
             to="/cart"
             className="relative text-gray-600 hover:text-gray-900 transition-colors p-2"
@@ -77,7 +89,7 @@ const Navbar = () => {
                     onClick={() => setMenuOpen(false)}
                     className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                   >
-                    Profile
+                    Mi perfil
                   </Link>
                   {userInfo.role === 'admin' && (
                     <Link
@@ -85,7 +97,7 @@ const Navbar = () => {
                       onClick={() => setMenuOpen(false)}
                       className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
                     >
-                      Admin Panel
+                      Panel admin
                     </Link>
                   )}
                   <hr className="my-1 border-gray-100" />
@@ -93,29 +105,54 @@ const Navbar = () => {
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2.5 text-sm text-anger hover:bg-red-50 transition-colors"
                   >
-                    Logout
+                    Cerrar sesión
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-3 py-2"
               >
-                Sign In
+                Iniciar sesión
               </Link>
               <Link
                 to="/register"
                 className="text-sm font-semibold text-white bg-gradient-to-r from-sadness to-fear px-5 py-2 rounded-full hover:shadow-md hover:scale-105 transition-all duration-200"
               >
-                Get Started
+                Crear cuenta
               </Link>
             </div>
           )}
+
+          <button
+            className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Abrir menú"
+          >
+            {mobileOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+          </button>
         </div>
       </div>
+
+      {mobileOpen && (
+        <div className="lg:hidden border-t border-gray-100 bg-white animate-fade-in">
+          <div className="px-4 py-3 space-y-1">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMobileOpen(false)}
+                className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

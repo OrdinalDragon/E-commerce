@@ -19,7 +19,7 @@ const ProductCard = ({ product }) => {
         qty: 1,
       })
     );
-    toast.success(`${product.name} added to cart`);
+    toast.success(`${product.name} agregado al carrito`);
   };
 
   const imageSrc = product.images?.[0];
@@ -68,7 +68,7 @@ const ProductCard = ({ product }) => {
             onClick={handleAddToCart}
             className="bg-gradient-to-r from-joy to-anger text-white text-xs font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity shadow-sm"
           >
-            Add to Cart
+            Agregar
           </button>
         </div>
       </div>

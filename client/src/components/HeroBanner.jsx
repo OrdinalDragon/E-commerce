@@ -10,20 +10,20 @@ const HeroBanner = () => {
       <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-32 flex flex-col md:flex-row items-center gap-12">
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-            <span className="bg-gradient-to-r from-joy via-anger to-fear bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-              Discover
+              <span className="bg-gradient-to-r from-joy via-anger to-fear bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+              Descubrí
             </span>
             <br />
-            <span className="text-gray-900">What Moves You</span>
+            <span className="text-gray-900">lo que te mueve</span>
           </h1>
           <p className="mt-4 text-gray-600 text-lg max-w-lg mx-auto md:mx-0">
-            Curated products that spark joy, fuel passion, and bring every emotion to life.
+            Productos seleccionados que despiertan alegría, encienden la pasión y le dan vida a cada emoción.
           </p>
           <button
             onClick={scrollToProducts}
             className="mt-8 inline-flex items-center gap-2 bg-gradient-to-r from-sadness via-fear to-anger text-white font-semibold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-[length:200%_auto] animate-gradient"
           >
-            Explore Collection
+            Explorar colección
             <svg className="w-5 h-5 animate-float" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>

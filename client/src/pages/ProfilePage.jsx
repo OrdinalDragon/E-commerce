@@ -260,7 +260,7 @@ const ProfilePage = () => {
 
             {!loadingOrders && orders.length > 0 && (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm min-w-[700px]">
                   <thead>
                     <tr className="border-b border-gray-100">
                       <th className="text-left pb-3 font-semibold text-gray-500 text-xs uppercase tracking-wider">
