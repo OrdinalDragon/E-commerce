@@ -1,7 +1,23 @@
+# ── Dependencias ─────────────────────────────
 node_modules/
+
+# ── Entorno ──────────────────────────────────
+# .env          = desarrollo local (credenciales reales)
+# .env.development = plantilla de desarrollo
+# .env.production  = credenciales de producción
+# NINGUNO debe subirse al repositorio.
 .env
+.env.development
 .env.production
+
+# ── Uploads locales ──────────────────────────
 uploads/
+
+# ── Build del frontend ───────────────────────
 client/dist/
+
+# ── Logs ─────────────────────────────────────
 *.log
+
+# ── Sistema ──────────────────────────────────
 .DS_Store

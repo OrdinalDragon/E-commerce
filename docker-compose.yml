@@ -1,4 +1,13 @@
-version: '3.8'
+# ═══════════════════════════════════════════════
+#  docker-compose.yml — Desarrollo local
+# ═══════════════════════════════════════════════
+#  Usa la imagen con target: development para
+#  hot-reload con bind mount del código fuente.
+#
+#  Las variables de entorno se pasan desde el
+#  archivo .env que está en .gitignore.
+#  Si no existe, copiá .env.development como .env.
+# ═══════════════════════════════════════════════
 
 services:
   app:

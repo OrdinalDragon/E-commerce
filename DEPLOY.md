@@ -267,18 +267,156 @@ Luego en el workflow reemplazá el paso `configure-aws-credentials` por:
 
 ---
 
-## 4. Variables de entorno
+## 4. Estrategia de variables de entorno
 
-| Variable | Dónde se usa | Descripción |
+### 4.1. Filosofía: separación total de entornos
+
+El proyecto usa **tres archivos de entorno distintos**, cada uno con un propósito específico:
+
+| Archivo | Git | ¿Para qué? |
 |---|---|---|
-| `NODE_ENV` | Backend | `development` o `production` |
-| `PORT` | Backend | Puerto del servidor (5000) |
-| `MONGO_URI` | Backend | Cadena de conexión a MongoDB |
-| `JWT_SECRET` | Backend | Secreto para firmar tokens JWT |
-| `JWT_EXPIRES_IN` | Backend | Duración del token (ej. `30d`) |
-| `AWS_REGION` | Backend + CI/CD | Región AWS |
-| `AWS_ACCESS_KEY_ID` | Backend | Access Key para S3 |
-| `AWS_SECRET_ACCESS_KEY` | Backend | Secret Key para S3 |
-| `S3_BUCKET_NAME` | Backend | Bucket donde se almacenan las imágenes |
-| `S3_BUCKET_URL` | Backend | URL base del bucket S3 |
-| `CORS_ORIGIN` | Backend | Origen permitido para CORS (URL de CloudFront) |
+| `.env` | Ignorado | Desarrollo local. Lo crea cada desarrollador. |
+| `.env.development` | Ignorado | Plantilla de referencia con valores de desarrollo. |
+| `.env.production` | Ignorado | Producción en EC2. Se crea manualmente en el servidor. |
+
+Ninguno de estos archivos se sube a GitHub. El repositorio solo contiene `.gitignore` que los excluye explícitamente.
+
+### 4.2. Cómo se cargan según el entorno
+
+En `server.js` la carga es explícita:
+
+```js
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+dotenv.config({ path: envFile });
+```
+
+- **Local (`node server.js` o `docker compose up`):**  
+  `NODE_ENV` no está definido o vale `development` → se carga `.env`.
+
+- **Producción (`docker compose -f docker-compose.prod.yml up -d`):**  
+  `NODE_ENV=production` está definido en `.env.production` → se carga `.env.production`.  
+  Además, Docker Compose ya inyecta esas variables directamente en el contenedor mediante `env_file`, así que la línea de `dotenv` es un respaldo por si se ejecuta fuera de Docker.
+
+### 4.3. Inyección segura en Docker (el mecanismo clave)
+
+El archivo `docker-compose.prod.yml` pasa las variables al contenedor de esta forma:
+
+```yaml
+services:
+  app:
+    env_file:
+      - .env.production
+```
+
+**¿Qué hace exactamente `env_file`?**
+
+Docker Compose lee el archivo `.env.production` en la máquina host (EC2) y le inyecta **cada línea como una variable de entorno real** dentro del contenedor en tiempo de ejecución. El contenedor las ve como si hubieran sido seteadas con `export`.
+
+**¿Por qué es seguro?**
+
+1. Las variables no quedan grabadas en ninguna capa de la imagen Docker (`.dockerignore` excluye `.env*`)
+2. El archivo `.env.production` se crea a mano en el servidor via `scp` o `nano`, nunca pasa por Git
+3. Si alguien se descarga la imagen de un registro, las variables no están dentro
+
+**Flujo completo de secrets:**
+
+```
+Desarrollador (local)                  EC2 (producción)
+─────────────────────                  ────────────────
+.gitignore                       
+  ├─ .env                          
+  ├─ .env.development                  
+  └─ .env.production                   .env.production (creado a mano)
+                                               │
+                                        docker-compose.prod.yml
+                                               │
+                                        env_file: .env.production
+                                               │
+                                        Contenedor Docker
+                                        (variables en proceso)
+```
+
+### 4.4. Configuración de CORS en producción (seguridad crítica)
+
+El backend valida el origen de cada petición. En producción, `CORS_ORIGIN` debe apuntar **exactamente** al dominio del frontend:
+
+```
+# ❌ Incorrecto — abre el backend a cualquier sitio
+CORS_ORIGIN=*
+
+# ✅ Correcto — solo acepta peticiones desde CloudFront
+CORS_ORIGIN=https://dxxxxxxxxxxxx.cloudfront.net
+
+# ✅ También funciona con múltiples orígenes (separados por coma)
+CORS_ORIGIN=https://dxxxxxxxxxxxx.cloudfront.net,https://tienda.midominio.com
+```
+
+El servidor aplica esta regla en `server.js`:
+
+```js
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+```
+
+Si por algún motivo `CORS_ORIGIN` no está definido, cae a `'*'` (permisivo). Por eso **es obligatorio setearlo en producción**.
+
+### 4.5. Tabla completa de variables
+
+| Variable | Entorno | ¿Quién la necesita? | Secreto | Descripción |
+|---|---|---|---|---|
+| `NODE_ENV` | Ambos | Backend | No | `development` o `production` |
+| `PORT` | Ambos | Backend | No | Puerto del servidor (5000) |
+| `MONGO_URI` | Ambos | Backend | Sí | Cadena de conexión a MongoDB |
+| `JWT_SECRET` | Ambos | Backend | **Sí** | Clave para firmar tokens JWT |
+| `JWT_EXPIRES_IN` | Ambos | Backend | No | Duración del token |
+| `AWS_REGION` | Ambos | Backend | No | Región AWS |
+| `AWS_ACCESS_KEY_ID` | Ambos | Backend | **Sí** | Access Key de IAM |
+| `AWS_SECRET_ACCESS_KEY` | Ambos | Backend | **Sí** | Secret Key de IAM |
+| `S3_BUCKET_NAME` | Ambos | Backend | No | Bucket de imágenes |
+| `S3_BUCKET_URL` | Ambos | Backend | No | URL pública del bucket |
+| `CORS_ORIGIN` | Ambos | Backend | No | Origen permitido (dominio del frontend) |
+
+**En desarrollo**, las variables marcadas como "Sí" pueden tener valores placeholder.  
+**En producción**, deben ser valores reales y mantenerse fuera del repositorio.
+
+### 4.6. Cómo empezar desde cero (para un nuevo desarrollador)
+
+```bash
+# 1. Clonar el repo
+git clone https://github.com/tu-usuario/tu-repo.git
+cd ecommerce
+
+# 2. Crear el archivo de entorno de desarrollo
+cp .env.development .env
+
+# 3. Editar según sea necesario (MongoDB local, credenciales S3 de prueba)
+nano .env
+
+# 4. Levantar con Docker
+docker compose up -d
+```
+
+### 4.7. Cómo configurar producción en EC2
+
+```bash
+# 1. Conectarse a la instancia
+ssh -i tu-clave.pem ubuntu@<ip-publica>
+
+# 2. Clonar el repo
+git clone https://github.com/tu-usuario/tu-repo.git ecommerce
+cd ecommerce
+
+# 3. Crear el archivo de producción con valores reales
+#    IMPORTANTE: este paso es MANUAL. No hay comandos automáticos.
+nano .env.production
+# Pegar el contenido de .env.production del repo y reemplazar:
+#   - MONGO_URI → cadena de Atlas
+#   - JWT_SECRET → openssl rand -hex 64
+#   - AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY → credenciales IAM reales
+#   - CORS_ORIGIN → URL de CloudFront
+
+# 4. Verificar que el archivo no tenga errores de sintaxis
+source .env.production && echo "OK"
+
+# 5. Levantar con docker-compose
+docker compose -f docker-compose.prod.yml up -d
+```

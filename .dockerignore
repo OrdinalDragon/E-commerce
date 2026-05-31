@@ -1,6 +1,19 @@
+# ── No copiar dependencias locales ───────────
 node_modules
+
+# ── No copiar archivos de entorno ────────────
+# Las variables se inyectan en runtime via
+# docker-compose env_file, no en build time.
+.env
+.env.development
+.env.production
+
+# ── No copiar git ────────────────────────────
 .git
 .gitignore
-.env
+
+# ── No copiar documentación ──────────────────
 *.md
+
+# ── No copiar uploads locales ────────────────
 uploads
