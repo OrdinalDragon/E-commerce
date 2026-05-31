@@ -7,7 +7,7 @@ export const orderApi = apiSlice.injectEndpoints({
       providesTags: ['Order'],
     }),
     getOrders: builder.query({
-      query: () => '/orders',
+      query: (params) => ({ url: '/orders', params }),
       providesTags: ['Order'],
     }),
     getMyOrders: builder.query({

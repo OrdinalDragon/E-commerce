@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiEdit2, FiTrash2, FiPlus, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { useGetProductsQuery, useDeleteProductMutation } from '../../features/api/productApi.js';
+import Pagination from '../../components/ui/Pagination.jsx';
 import toast from 'react-hot-toast';
 
 const ProductsPage = () => {
@@ -26,9 +27,6 @@ const ProductsPage = () => {
       toast.error('Error al eliminar el producto');
     }
   };
-
-  const handlePrev = () => { if (page > 1) setPage(page - 1); };
-  const handleNext = () => { if (pagination && page < pagination.totalPages) setPage(page + 1); };
 
   return (
     <div>
@@ -155,40 +153,14 @@ const ProductsPage = () => {
             </table>
           </div>
 
-          {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50/30">
-              <span className="text-xs text-gray-500">
-                Página {pagination.page} de {pagination.totalPages} ({pagination.totalCount} productos)
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={handlePrev}
-                  disabled={page <= 1}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-200 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                >
-                  <FiChevronLeft size={16} />
-                </button>
-                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={`w-8 h-8 text-xs rounded-lg transition-colors ${
-                      p === page
-                        ? 'bg-sadness text-white shadow-sm'
-                        : 'text-gray-500 hover:bg-gray-200'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-                <button
-                  onClick={handleNext}
-                  disabled={page >= pagination.totalPages}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-200 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                >
-                  <FiChevronRight size={16} />
-                </button>
-              </div>
+          {pagination && (
+            <div className="px-4 py-3 border-t border-gray-100">
+              <Pagination
+                currentPage={page}
+                totalPages={pagination.totalPages}
+                onPageChange={setPage}
+                showInfo
+              />
             </div>
           )}
         </div>

@@ -3,6 +3,7 @@ import { useGetProductsQuery } from '../features/api/productApi.js';
 import ProductCard from '../components/ProductCard.jsx';
 import HeroBanner from '../components/HeroBanner.jsx';
 import { ProductCardSkeleton } from '../components/ui/Skeleton.jsx';
+import Pagination from '../components/ui/Pagination.jsx';
 
 const CATEGORIES = [
   'All',
@@ -108,36 +109,13 @@ const HomePage = () => {
               ))}
             </div>
 
-            {pagination && pagination.totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-12">
-                <button
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  className="px-4 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-600 hover:border-sadness hover:text-sadness disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                >
-                  Previous
-                </button>
-                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPage(p)}
-                    className={`w-9 h-9 text-sm rounded-lg transition-colors ${
-                      p === page
-                        ? 'bg-sadness text-white shadow-sm'
-                        : 'bg-white text-gray-600 border border-gray-200 hover:border-sadness hover:text-sadness'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-                <button
-                  disabled={page >= pagination.totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className="px-4 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-600 hover:border-sadness hover:text-sadness disabled:opacity-40 disabled:pointer-events-none transition-colors"
-                >
-                  Next
-                </button>
-              </div>
+            {pagination && (
+              <Pagination
+                currentPage={page}
+                totalPages={pagination.totalPages}
+                onPageChange={setPage}
+                showInfo
+              />
             )}
           </>
         )}

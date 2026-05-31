@@ -1,14 +1,18 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiEye } from 'react-icons/fi';
 import { useGetOrdersQuery } from '../../features/api/orderApi.js';
+import Pagination from '../../components/ui/Pagination.jsx';
 
 const formatDate = (d) =>
   d ? new Date(d).toLocaleDateString('es-AR', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
-  const { data, isLoading, isError, error } = useGetOrdersQuery();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError, error } = useGetOrdersQuery({ page, limit: 15 });
   const orders = data?.data || [];
+  const pagination = data?.pagination;
 
   return (
     <div>
@@ -122,6 +126,16 @@ const OrdersPage = () => {
               </tbody>
             </table>
           </div>
+          {pagination && (
+            <div className="px-4 py-3 border-t border-gray-100">
+              <Pagination
+                currentPage={page}
+                totalPages={pagination.totalPages}
+                onPageChange={setPage}
+                showInfo
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
