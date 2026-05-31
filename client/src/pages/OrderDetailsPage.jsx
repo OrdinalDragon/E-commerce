@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiCheckCircle, FiPackage } from 'react-icons/fi';
-import { useGetOrderDetailsQuery } from '../features/api/orderApi.js';
+import { FiArrowLeft, FiCheckCircle, FiPackage, FiCreditCard } from 'react-icons/fi';
+import { useGetOrderDetailsQuery, usePayOrderMutation } from '../features/api/orderApi.js';
 import Skeleton from '../components/ui/Skeleton.jsx';
+import toast from 'react-hot-toast';
 
 const formatDate = (d) =>
   d
@@ -19,7 +20,24 @@ const OrderDetailsPage = () => {
   const navigate = useNavigate();
 
   const { data, isLoading, isError, error } = useGetOrderDetailsQuery(id);
+  const [payOrder, { isLoading: paying }] = usePayOrderMutation();
+
   const order = data?.data;
+
+  const handlePay = async () => {
+    try {
+      await payOrder({
+        id,
+        paymentId: 'pay_sim_' + Date.now(),
+        status: 'COMPLETED',
+        update_time: new Date().toISOString(),
+        email_address: 'cliente@tienda.com',
+      }).unwrap();
+      toast.success('Pago procesado correctamente');
+    } catch {
+      toast.error('Error al procesar el pago');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -146,6 +164,37 @@ const OrderDetailsPage = () => {
                 <p className="text-gray-500">Fecha: {formatDate(order.paidAt)}</p>
               )}
             </div>
+
+            {!order.isPaid && (
+              <div className="mt-5 bg-gradient-to-r from-joy/10 to-anger/10 border border-joy/20 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                  Completar pago
+                </h3>
+                <p className="text-xs text-gray-500 mb-4">
+                  Simulación de pago para probar el flujo
+                </p>
+                <button
+                  onClick={handlePay}
+                  disabled={paying}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+                >
+                  {paying ? (
+                    <>
+                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Procesando pago...
+                    </>
+                  ) : (
+                    <>
+                      <FiCreditCard size={18} />
+                      Simular pago con MercadoPago / Stripe
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
