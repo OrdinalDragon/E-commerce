@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { FiArrowLeft, FiTruck, FiCheckCircle } from 'react-icons/fi';
 import {
   useGetOrderDetailsQuery,
@@ -22,6 +23,8 @@ const OrderDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
   const { data, isLoading, isError, error } = useGetOrderDetailsQuery(id);
   const [deliverOrder, { isLoading: delivering }] = useDeliverOrderMutation();
 
@@ -30,9 +33,15 @@ const OrderDetailsPage = () => {
   const handleDeliver = async () => {
     try {
       await deliverOrder(id).unwrap();
-      toast.success('Orden marcada como entregada');
+      toast.success('Orden marcada como entregada', {
+        style: { background: '#FFD93D', color: '#1f2937' },
+        iconTheme: { primary: '#1f2937', secondary: '#FFD93D' },
+      });
     } catch {
-      toast.error('Error al actualizar la orden');
+      toast.error('Error al actualizar la orden', {
+        style: { background: '#FF6B6B', color: '#fff' },
+        iconTheme: { primary: '#fff', secondary: '#FF6B6B' },
+      });
     }
   };
 
@@ -82,7 +91,8 @@ const OrderDetailsPage = () => {
   if (!order) return null;
 
   const subtotal = order.itemsPrice;
-  const canDeliver = order.isPaid && !order.isDelivered;
+  const isAdmin = userInfo?.role === 'admin';
+  const canDeliver = isAdmin && order.isPaid && !order.isDelivered;
 
   return (
     <div className="space-y-6">
