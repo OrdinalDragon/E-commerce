@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useUploadImageMutation } from '../../features/api/productApi.js';
+import compressImage from '../../utils/compressImage.js';
 import toast from 'react-hot-toast';
 
 const ImageDropzone = ({ images = [], onImagesChange, maxImages = 5 }) => {
@@ -9,8 +10,9 @@ const ImageDropzone = ({ images = [], onImagesChange, maxImages = 5 }) => {
 
   const handleUpload = useCallback(async (file) => {
     if (!file) return;
+    const compressed = await compressImage(file);
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', compressed);
     try {
       const result = await uploadImage(formData).unwrap();
       onImagesChange([...images, result.url]);
