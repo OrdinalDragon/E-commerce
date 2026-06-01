@@ -1,23 +1,17 @@
 import { useState } from 'react';
-import { useGetProductsQuery } from '../features/api/productApi.js';
+import { useGetProductsQuery, useGetCategoriesQuery } from '../features/api/productApi.js';
 import ProductCard from '../components/ProductCard.jsx';
 import HeroBanner from '../components/HeroBanner.jsx';
 import { ProductCardSkeleton } from '../components/ui/Skeleton.jsx';
 import Pagination from '../components/ui/Pagination.jsx';
 
-const CATEGORIES = [
-  'All',
-  'Electronics',
-  'Clothing',
-  'Home',
-  'Books',
-  'Sports',
-];
-
 const HomePage = () => {
   const [keyword, setKeyword] = useState('');
   const [category, setCategory] = useState('All');
   const [page, setPage] = useState(1);
+
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const categories = categoriesData?.data || [];
 
   const params = { page, limit: 8 };
   if (keyword.trim()) params.keyword = keyword.trim();
@@ -58,7 +52,7 @@ const HomePage = () => {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-8">
-          {CATEGORIES.map((cat) => (
+          {['All', ...categories].map((cat) => (
             <button
               key={cat}
               onClick={() => { setCategory(cat); setPage(1); }}

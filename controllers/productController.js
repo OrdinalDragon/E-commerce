@@ -146,6 +146,15 @@ export const createReview = async (req, res, next) => {
   }
 };
 
+export const getCategories = async (req, res, next) => {
+  try {
+    const categories = await Product.distinct('category');
+    res.json({ success: true, data: categories.sort() });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const uploadProductImage = (req, res) => {
   res.json({ url: req.fileUrl });
 };
